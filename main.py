@@ -15,16 +15,24 @@ currencies_links = list({link[link.find('/') + 1:link.rfind('/') + 1:] for link 
 
 currencies = {value[value.find('/') + 1:value.rfind('/'):]: ref + value for value in currencies_links}
 
-currency_name = 'bitcoin'
+print("Currencies from the site https://coinmarketcap.com/")
 
-currency_link = currencies[currency_name]
-response = requests.get(currency_link, headers=header).text
-soup = bs4.BeautifulSoup(response, 'lxml')
+for key in currencies.keys():
+    print(key)
 
-price = str(soup.find('span', class_="sc-f70bb44c-0 jxpCgO base-text"))
-price = price[price.find('>') + 1:price.rfind('<'):]
+currency_name = input("Select a currency name ")
 
-name = str(soup.find('span', class_="sc-f70bb44c-0 jltoa"))
-name = name[name.find('>') + 1:name.rfind('<span'):]
+if currency_name in currencies.keys():
+    currency_link = currencies[currency_name]
+    response = requests.get(currency_link, headers=header).text
+    soup = bs4.BeautifulSoup(response, 'lxml')
 
-print(f"{name=}, {price=}, {currency_link=}")
+    price = str(soup.find('span', class_="sc-f70bb44c-0 jxpCgO base-text"))
+    price = price[price.find('>') + 1:price.rfind('<'):]
+
+    name = str(soup.find('span', class_="sc-f70bb44c-0 jltoa"))
+    name = name[name.find('>') + 1:name.rfind('<span'):]
+
+    print(f"{name=}, {price=}, {currency_link=}")
+else:
+    print("The currency was not found")

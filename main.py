@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import bs4
 import fake_useragent
 import requests
@@ -10,10 +8,10 @@ header = {"user-agent": fake_useragent.UserAgent().random}
 response = requests.get(ref, headers=header).text
 soup = bs4.BeautifulSoup(response, 'lxml')
 
-links = soup.find_all('a', class_="cmc-link")
+links = soup.find_all('a', href=lambda link: link and link.startswith("/currencies/"))
 
-token_links = [link for link in links if 'class="cmc-link" href="/currencies/' in str(link)]
+currencies_links = {str(link)[str(link).find('<'):str(link).find('>') + 1:] for link in links}
 
-pprint(token_links)
+currencies_links = list({link[link.find('/') + 1:link.rfind('/') + 1:] for link in currencies_links})
 
-filter_links = {}
+currencies = {value[value.find('/') + 1:value.rfind('/'):]: ref + value for value in currencies_links}

@@ -11,7 +11,20 @@ soup = bs4.BeautifulSoup(response, 'lxml')
 links = soup.find_all('a', href=lambda link: link and link.startswith("/currencies/"))
 
 currencies_links = {str(link)[str(link).find('<'):str(link).find('>') + 1:] for link in links}
-
 currencies_links = list({link[link.find('/') + 1:link.rfind('/') + 1:] for link in currencies_links})
 
 currencies = {value[value.find('/') + 1:value.rfind('/'):]: ref + value for value in currencies_links}
+
+currency_name = 'bitcoin'
+
+currency_link = currencies[currency_name]
+response = requests.get(currency_link, headers=header).text
+soup = bs4.BeautifulSoup(response, 'lxml')
+
+price = str(soup.find('span', class_="sc-f70bb44c-0 jxpCgO base-text"))
+price = price[price.find('>') + 1:price.rfind('<'):]
+
+name = str(soup.find('span', class_="sc-f70bb44c-0 jltoa"))
+name = name[name.find('>') + 1:name.rfind('<span'):]
+
+print(f"{name=}, {price=}, {currency_link=}")
